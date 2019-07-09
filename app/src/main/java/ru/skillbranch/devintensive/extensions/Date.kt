@@ -9,12 +9,64 @@ const val MINUTE = 60 * SECOND
 const val HOUR = 60 * MINUTE
 const val DAY = 24 * HOUR
 
-enum class TimeUnits{
+enum class TimeUnits {
     SECOND,
     MINUTE,
     HOUR,
-    DAY
+    DAY;
 
+    fun plural(i: Int): String? {
+        return when(this) {
+            SECOND -> humSeconds(i)
+            MINUTE -> humMinutes(i)
+            HOUR -> humHours(i)
+            DAY -> humDays(i)
+        }
+    }
+
+    private fun humSeconds(value: Int): String {
+        return when( value%100/10) {
+            1 -> "$value секунд"
+            else -> when(value.rem(10)) {
+                1 -> "$value секунду"
+                2,3,4  -> "$value секунды"
+                else -> "$value секунд"
+            }
+        }
+    }
+
+    private fun humMinutes(value: Int): String {
+        return when( value%100/10) {
+            1 -> "$value минут"
+            else -> when(value.rem(10)) {
+                1 -> "$value минуту"
+                2,3,4  -> "$value минуты"
+                else -> "$value минут"
+            }
+        }
+    }
+
+    private fun humHours(value: Int): String {
+        return when( value%100/10) {
+            1 -> "$value часов"
+            else -> when(value.rem(10)) {
+                1 -> "$value час"
+                2,3,4  -> "$value часа"
+                else -> "$value часов"
+            }
+        }
+    }
+
+    private fun humDays(value: Int): String {
+        return when( value%100/10) {
+            1 -> "$value дней"
+            else -> when(value.rem(10)) {
+                1 -> "$value день"
+                2,3,4  -> "$value дня"
+                else -> "$value дней"
+            }
+        }
+    }
 }
 
 fun Date.format(pattern: String="HH:mm:ss dd.MM.yy"):String {
