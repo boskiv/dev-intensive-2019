@@ -4,15 +4,23 @@ object Utils {
     fun parseFullName(fullName:String?):Pair<String?,String?>{
 
 
+        val fullNameTrimmed = fullName?.trim()
+        var parts : List<String>? = fullNameTrimmed?.split(" ")
 
-        var parts : List<String>? = fullName?.split(" ")
-
-        when(fullName) {
+        when(fullNameTrimmed?.trim()) {
             ""," " -> parts = null
         }
 
-        val firstName = parts?.getOrNull(0)
-        val lastName = parts?.getOrNull(1)
+        var firstName = parts?.getOrNull(0)?.trim()
+        var lastName = parts?.getOrNull(1)?.trim()
+
+        when(firstName?.trim()) {
+            ""," " -> firstName = null
+        }
+
+        when(lastName?.trim()) {
+            ""," " ->  lastName = null
+        }
 
         return firstName to lastName
     }
@@ -22,22 +30,36 @@ object Utils {
             'а' to "a", 'б' to "b", 'в' to "v", 'г' to "g", 'д' to "d", 'е' to "e", 'ё' to "e", 'ж' to "zh", 'з' to "z",
             'и' to "i", 'й' to "i", 'к' to "k", 'л' to "l", 'м' to "m", 'н' to "n", 'о' to "o", 'п' to "p", 'р' to "r",
             'с' to "s", 'т' to "t", 'у' to "u", 'ф' to "f", 'х' to "h", 'ц' to "c", 'ч' to "ch", 'ш' to "sh", 'щ' to "sh'",
-            'ъ' to "", 'ы' to "i", 'ь' to "", 'э' to "e", 'ю' to "yu", 'я' to "ya"
+            'ъ' to "", 'ы' to "i", 'ь' to "", 'э' to "e", 'ю' to "yu", 'я' to "ya",
+            'А' to "A", 'Б' to "B", 'В' to "V", 'Г' to "G", 'Д' to "D", 'Е' to "E", 'Ё' to "E", 'Ж' to "Zh", 'З' to "Z",
+            'И' to "I", 'Й' to "I", 'К' to "K", 'Л' to "L", 'М' to "M", 'Н' to "N", 'О' to "O", 'П' to "P", 'Р' to "R",
+            'С' to "S", 'Т' to "T", 'У' to "U", 'Ф' to "F", 'Х' to "H", 'Ц' to "C", 'Ч' to "Ch", 'Ш' to "Sh", 'Щ' to "Sh'",
+            'Ъ' to "", 'Ы' to "I", 'Ь' to "", 'Э' to "E", 'Ю' to "Yu", 'Я' to "Ya"
         )
 
-        var firstName = ""
-        var lastName = ""
-        val (firstNameRaw, lastNameRaw) = payload.toLowerCase().split(" ")
+        val parts = payload.split(" ")
+        val response = mutableListOf<String>()
+        var tmp: String
 
-        firstNameRaw.forEach {
-            c -> firstName += lettersMap[c]
+        for (part in parts) {
+            tmp = ""
+            part.forEach {
+
+                    c ->
+                run {
+                    if (c in lettersMap) {
+                        tmp += lettersMap[c]
+                    } else {
+                        tmp += c
+                    }
+                }
+            }
+            response += tmp
         }
 
-        lastNameRaw.forEach {
-                c -> lastName += lettersMap[c]
-        }
+        return response.joinToString(separator = divider)
 
-        return firstName.capitalize() + divider + lastName.capitalize()
+
     }
 
     fun toInitials(firstName: String?, lastName: String?): String? {
@@ -53,9 +75,9 @@ object Utils {
 
         return when {
             firstNameNull and lastNameNull -> null
-            firstNameNull and !lastNameNull -> "${lastName?.first()?.toUpperCase()}"
-            !firstNameNull and lastNameNull -> "${firstName?.first()?.toUpperCase()}"
-            else -> "${firstName?.first()?.toUpperCase()}${lastName?.first()?.toUpperCase()}"
+            firstNameNull and !lastNameNull -> "${lastName?.trim()?.first()?.toUpperCase()}"
+            !firstNameNull and lastNameNull -> "${firstName?.trim()?.first()?.toUpperCase()}"
+            else -> "${firstName?.trim()?.first()?.toUpperCase()}${lastName?.trim()?.first()?.toUpperCase()}"
         }
     }
 }
