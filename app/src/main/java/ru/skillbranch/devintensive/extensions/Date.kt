@@ -53,39 +53,27 @@ fun Date.humanizeDiff(date : Date = Date()): String {
 //    26ч - 360д "N дней назад"
 //
 //    >360д "более года назад"
+    val messageDate = this
+    val diffPair = when {
+        messageDate.time > date.time -> Pair(messageDate.time - date.time, true)
+        messageDate.time < date.time -> Pair(date.time - messageDate.time, false)
+        else -> Pair(0L,false)
+    }
 
-    val diff = Date().time - date.time
-    return when(diff) {
-        in 0 .. 1 * SECOND -> "только что"
-        in 1 * SECOND .. 45 * SECOND -> "несколько секунд назад"
-        in 45 * SECOND .. 75 * SECOND -> "минуту назад"
-        in 75 * SECOND .. 45 * MINUTE -> "${abs(diff/ MINUTE)} ${humMinutes(diff)} назад"
-        in 45* MINUTE .. 75 * MINUTE -> "час назад"
-        in 75 * MINUTE .. 22* HOUR -> "${abs(diff/ HOUR)} ${humHours(diff)} назад"
-        in 22 * HOUR .. 26 * HOUR -> "день назад"
-        in 26 * HOUR .. 360 * DAY -> "${abs(diff/ DAY)} дней назад"
-        in 360 * DAY .. 99999 * DAY -> "более года назад"
-        else -> "ошибка $diff"
-
+    val (diff, future) = diffPair
+    return when {
+            diff <= 1 * SECOND -> "только что"
+            diff > 1 * SECOND && diff <= 45 * SECOND -> if (future) "через несколько секунд" else "несколько секунд назад"
+            diff > 45 * SECOND && diff <= 75 * SECOND -> if (future) "через минуту" else "минуту назад"
+            diff > 75 * SECOND && diff <= 45 * MINUTE -> if (future) "через ${TimeUnits.MINUTE.plural(abs(diff/ MINUTE).toInt())}" else "${TimeUnits.MINUTE.plural(abs(diff/ MINUTE).toInt())} назад"
+            diff > 45* MINUTE && diff <= 75 * MINUTE -> if (future) "через час" else "час назад"
+            diff > 75 * MINUTE && diff <= 22* HOUR -> if (future) "через ${TimeUnits.HOUR.plural(abs(diff/ HOUR).toInt())}" else "${TimeUnits.HOUR.plural(abs(diff/ HOUR).toInt())} назад"
+            diff > 22 * HOUR && diff <= 26 * HOUR -> if (future) "через день" else "день назад"
+            diff > 26 * HOUR && diff <= 360 * DAY -> if (future) "через ${TimeUnits.DAY.plural(abs(diff/ DAY).toInt())}" else "${TimeUnits.DAY.plural(abs(diff/ DAY).toInt())} назад"
+            diff > 360 * DAY && diff <= Long.MAX_VALUE -> if (future) "более чем через год" else "более года назад"
+            else -> "ошибка $diff"
     }
 }
 
-fun humHours(diff: Long): String {
-    val hour = abs(diff/ HOUR)
-    return when(hour) {
-        1L -> "час"
-        2L,3L,4L,22L,23L,24L -> "часа"
-        else -> "часов"
-    }
-}
 
-fun humMinutes(diff: Long): String {
-    val minutes = abs(diff/ MINUTE)
-    val remainder = minutes.rem(10)
-    return when(remainder) {
-        1L -> "минуту"
-        2L,3L,4L  -> "минуты"
-        else -> "минут"
-    }
-}
 
