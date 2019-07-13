@@ -1,5 +1,4 @@
 package ru.skillbranch.devintensive.extensions
-import org.jsoup.Jsoup
 
 fun String.truncate(count:Int = 16):String {
     return when(this.trim().length <= count) {
@@ -9,6 +8,9 @@ fun String.truncate(count:Int = 16):String {
 }
 
 fun String.stripHtml(): String {
+    return this.replace(Regex("\\<.*?>"), "").replace(Regex("&.*?;"),"").replace(Regex("\\s+"), " ")
 
-    return Jsoup.parse(this).text()
+
+
+
 }
