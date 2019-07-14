@@ -12,6 +12,10 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
     }
 
     fun listenAnswer(answer:String): Pair<String, Triple<Int, Int, Int>> {
+        val (isValid, message) = question.validate(answer)
+        if (! isValid) {
+            return message to status.color
+        }
         if (question == Question.IDLE) {
             return question.question to status.color
         }
@@ -65,42 +69,55 @@ class Bender(var status: Status = Status.NORMAL, var question: Question = Questi
             }
         }
     }
-    enum class Question(val question: String, val answers: List<String>) {
-        NAME("Как меня зовут?", listOf("Бендер", "Bender")) {
+    enum class Question(val question: String,
+                        val answers: List<String>,
+                        private val validationString: String,
+                        private val validationMessage: String) {
+        NAME("Как меня зовут?",
+            listOf("Бендер", "Bender"),
+            "^[A-Z]{1}.*" ,
+            "Имя должно начинаться с заглавной буквы\n") {
+
             override fun nextQuestion(): Question = PROFESSION
         },
-        PROFESSION("Назови мою профессию?", listOf("сгибальщик", "bender")) {
+        PROFESSION("Назови мою профессию?",
+            listOf("сгибальщик", "bender"),
+            "^[a-z]{1}.*",
+            "Профессия должна начинаться со строчной буквы\n") {
             override fun nextQuestion(): Question = MATERIAL
         },
-        MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "metal", "iron", "wood")) {
+        MATERIAL("Из чего я сделан?",
+            listOf("металл", "дерево", "metal", "iron", "wood"),
+            "\\D+",
+            "Материал не должен содержать цифр\n") {
             override fun nextQuestion(): Question = BDAY
         },
-        BDAY("Когда меня создали?", listOf("2993")) {
+        BDAY("Когда меня создали?",
+            listOf("2993"),
+            "\\d+",
+            "Год моего рождения должен содержать только цифры\n") {
             override fun nextQuestion(): Question = SERIAL
         },
-        SERIAL("Мой серийный номер?", listOf("2716057")) {
+        SERIAL("Мой серийный номер?",
+            listOf("2716057"),
+            "\\d{7}",
+            "Серийный номер содержит только цифры, и их 7\n") {
             override fun nextQuestion(): Question = IDLE
         },
-        IDLE("На этом все, вопросов больше нет", listOf()) {
+        IDLE("На этом все, вопросов больше нет",
+            listOf(), "\\.*", "") {
             override fun nextQuestion(): Question = IDLE
         };
 
         abstract fun nextQuestion(): Question
+        fun validate(answer: String): Pair<Boolean, String> {
+            var message = "${this.validationMessage}${this.question}"
+            val pattern = this.validationString.toRegex()
+            val isValid = pattern.matches(answer)
+            if (isValid) {
+                message = ""
+            }
+            return isValid to message
+        }
     }
-
-
-//    enum class Status(val color: Triple) {
-//        NORMAL(Triple(255, 255, 255)) ,
-//        WARNING(Triple(255, 120, 0)),
-//        DANGER(Triple(255, 60, 60)),
-//        CRITICAL(Triple(255, 0, 0)) ;
-//    }
-//    enum class Question(val question: String, val answers: List) {
-//        NAME("Как меня зовут?", listOf("Бендер", "benderObj"))
-//        PROFESSION("Назови мою профессию?", listOf("сгибальщик", "benderObj"))
-//        MATERIAL("Из чего я сделан?", listOf("металл", "дерево", "metal", "iron", "wood"))
-//        BDAY("Когда меня создали?", listOf("2993"))
-//        SERIAL("Мой серийный номер?", listOf("2716057"))
-//        IDLE("На этом все, вопросов больше нет", listOf())
-//    }
 }

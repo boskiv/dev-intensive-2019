@@ -28,8 +28,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-
-
     lateinit var benderImage: ImageView
     lateinit var textTxt: TextView
     lateinit var messageEt: EditText
