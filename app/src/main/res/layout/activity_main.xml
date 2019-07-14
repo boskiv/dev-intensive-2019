@@ -40,6 +40,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:maxLines="1"
             android:lines="1"
             android:textColor="@color/colorGrayLight"
             android:textColorHint="@color/colorGrayLight"
@@ -48,6 +49,8 @@
             android:paddingBottom="@dimen/font_normal_16"
             android:layout_marginRight="@dimen/font_normal_16"
             android:layout_marginLeft="@dimen/font_normal_16"
+            android:inputType="text"
+            android:imeOptions="actionDone"
             />
         <ImageView
             android:id="@+id/iv_send"
@@ -56,7 +59,7 @@
             android:src="@drawable/ic_send_white_24dp"
             android:layout_gravity="center"
             android:layout_marginEnd="@dimen/font_normal_16"
-            />
+            android:contentDescription="@string/send_button_description" />
 
 
 
